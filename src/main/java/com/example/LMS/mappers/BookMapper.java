@@ -1,17 +1,20 @@
 package com.example.LMS.mappers;
 
-import com.example.LMS.dtos.BookDto;
+import com.example.LMS.dtos.BookRequestDto;
+import com.example.LMS.dtos.BookResponseDto;
 import com.example.LMS.models.Book;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
 @Mapper(componentModel ="spring", uses = LoanMapper.class)
 public interface BookMapper {
 
-    Book toEntity(BookDto bookDto);
+    Book toEntity(BookRequestDto request);
 
-    BookDto toDto(Book book);
+    @Mapping(target = "genderId", source = "gender.id")
+    BookResponseDto toDto(Book book);
 
-    List<BookDto> toDtoList(List<Book> books);
+    List<BookResponseDto> toDtoList(List<Book> books);
 }

@@ -1,19 +1,19 @@
 package com.example.LMS.services;
 
-import com.example.LMS.dtos.BookDto;
-import com.example.LMS.models.Book;
+import com.example.LMS.dtos.BookRequestDto;
+import com.example.LMS.dtos.BookResponseDto;
 
 import java.util.List;
 
 public interface BookService {
 
-    BookDto saveBook(BookDto bookDto);
+    BookResponseDto saveBook(BookRequestDto request);
 
-    BookDto getBookById(Long id);
+    BookResponseDto getBookById(Long id);
 
     void deleteBookById(Long id);
 
-    BookDto updateBookById(Long id, BookDto bookDto);
+    BookResponseDto updateBookById(Long id, BookRequestDto request);
 
-    List<BookDto> getAllBooks();
+    List<BookResponseDto> getAllBooks();
 }

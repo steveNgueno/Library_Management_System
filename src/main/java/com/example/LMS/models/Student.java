@@ -29,7 +29,7 @@ public class Student extends BaseEntity{
     @Column(name="email", nullable= false)
     private String email;
 
-    @OneToMany(mappedBy= "loan", cascade= CascadeType.ALL, orphanRemoval = true )
+    @OneToMany(mappedBy= "student", cascade= CascadeType.ALL, orphanRemoval = true )
     private List<Loan> loans;
 
 }

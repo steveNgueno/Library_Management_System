@@ -1,6 +1,7 @@
 package com.example.LMS.controllers;
 
-import com.example.LMS.dtos.BookDto;
+import com.example.LMS.dtos.BookRequestDto;
+import com.example.LMS.dtos.BookResponseDto;
 import com.example.LMS.services.impl.BookServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,27 +18,27 @@ public class BookController {
     private final BookServiceImpl bookServiceImpl;
 
     @PostMapping("/save")
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto){
+    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookRequestDto request){
 
-        BookDto dto = bookServiceImpl.saveBook(bookDto);
+        BookResponseDto dto = bookServiceImpl.saveBook(request);
 
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<BookDto> getBookById(@PathVariable Long id){
+    public ResponseEntity<BookResponseDto> getBookById(@PathVariable Long id){
 
         return ResponseEntity.ok(bookServiceImpl.getBookById(id));
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<BookDto>> getAllBooks(){
+    public ResponseEntity<List<BookResponseDto>> getAllBooks(){
 
         return ResponseEntity.ok(bookServiceImpl.getAllBooks());
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<BookDto> updateBookById(@PathVariable Long id, @RequestBody BookDto dto){
+    public ResponseEntity<BookResponseDto> updateBookById(@PathVariable Long id, @RequestBody BookRequestDto dto){
         return ResponseEntity.ok(bookServiceImpl.updateBookById(id, dto));
     }
 

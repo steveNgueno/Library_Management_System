@@ -1,7 +1,8 @@
 package com.example.LMS.services.impl;
 
+import com.example.LMS.dtos.BookRequestDto;
+import com.example.LMS.dtos.BookResponseDto;
 import com.example.LMS.mappers.BookMapper;
-import com.example.LMS.dtos.BookDto;
 import com.example.LMS.models.Book;
 import com.example.LMS.models.Gender;
 import com.example.LMS.repositories.BookRepository;
@@ -9,14 +10,15 @@ import com.example.LMS.repositories.GenderRepository;
 import com.example.LMS.services.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
@@ -24,14 +26,13 @@ public class BookServiceImpl implements BookService {
     private final GenderRepository genderRepository;
 
     @Override
-    public BookDto saveBook(BookDto bookDto) {
+    public BookResponseDto saveBook(BookRequestDto request) {
 
          //check if the gender exists
-        Gender gender = genderRepository.findById(bookDto.genderId()).orElseThrow(() -> new RuntimeException("gender not found"));
+        Gender gender = genderRepository.findById(request.genderId()).orElseThrow(() -> new RuntimeException("gender not found"));
 
-        Book book = bookMapper.toEntity(bookDto);
+        Book book = bookMapper.toEntity(request);
         book.setGender(gender);
-        book.setLoans(new ArrayList<>());
 
         //save the book in the database
         Book savedBook = bookRepository.save(book);
@@ -40,7 +41,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDto getBookById(Long id) {
+    public BookResponseDto getBookById(Long id) {
 
         Book book = findBookById(id);
 
@@ -49,12 +50,12 @@ public class BookServiceImpl implements BookService {
 
 
     @Override
-    public BookDto updateBookById(Long id, BookDto bookDto) {
+    public BookResponseDto updateBookById(Long id, BookRequestDto request) {
 
         //check if the book exists
         Book book = findBookById(id);
 
-        book.setNumOfCopies(bookDto.numOfCopies());
+        book.setNumOfCopies(request.numOfCopies());
 
         Book savedBook = bookRepository.save(book);
 
@@ -62,7 +63,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> getAllBooks() {
+    public List<BookResponseDto> getAllBooks() {
 
         List<Book> books = bookRepository.findAll();
 

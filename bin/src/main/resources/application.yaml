@@ -21,9 +21,3 @@ server:
   port: 8080
   servlet:
     context-path: /api
-
-springdoc:
-  packages-to-scan: com.example.LMS.controllers
-  exclude-filters:
-    - name: com.example.LMS.GlobalExceptionHandler
-      type: ASSIGNABLE_TYPE

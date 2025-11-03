@@ -32,6 +32,6 @@ public class Book extends BaseEntity{
     @JoinColumn(name= "gender_id", nullable= false)
     private Gender gender;
 
-    @OneToMany(mappedBy= "loan_id", cascade= CascadeType.ALL, orphanRemoval= true)
+    @OneToMany(mappedBy= "book", cascade= CascadeType.ALL, orphanRemoval= true)
     private List<Loan> loans;
 }
