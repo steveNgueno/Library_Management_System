@@ -4,5 +4,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 
-public record BookResponseDto(String title, String author, LocalDate publicationYear, Long genderId, int numOfCopies, List<LoanDto> loans) {
+public record BookResponseDto(String title, String author, LocalDate publicationYear, String genderName, int numOfCopies, List<LoanResponseDto> loans) {
 }

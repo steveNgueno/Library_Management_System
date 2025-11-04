@@ -1,10 +1,8 @@
 package com.example.LMS.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +10,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="students")
@@ -26,8 +25,11 @@ public class Student extends BaseEntity{
     @Column(name="birthday", nullable= false)
     private LocalDate birthday;
 
-    @Column(name="email", nullable= false)
+    @Column(name="email", nullable= false, unique= true)
     private String email;
+
+    @Column(name="phone_number", nullable= false, unique= true)
+    private String phone;
 
     @OneToMany(mappedBy= "student", cascade= CascadeType.ALL, orphanRemoval = true )
     private List<Loan> loans;

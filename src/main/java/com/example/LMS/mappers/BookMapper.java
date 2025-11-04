@@ -13,7 +13,7 @@ public interface BookMapper {
 
     Book toEntity(BookRequestDto request);
 
-    @Mapping(target = "genderId", source = "gender.id")
+    @Mapping(target = "genderName", source = "gender.name")
     BookResponseDto toDto(Book book);
 
     List<BookResponseDto> toDtoList(List<Book> books);

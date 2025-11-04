@@ -26,13 +26,10 @@ public class GenderServiceImpl implements GenderService {
     @Override
     public GenderResponseDto save(GenderRequestDto request) {
 
-        if(request.name() == null || request.name().isEmpty()){
-            throw new IllegalArgumentException("gender's name must not be null or empty");
-        }
-
         if(genderRepository.existsByName(request.name())){
             throw new IllegalArgumentException("This genre already exists");
         }
+
         Gender savedGender = genderRepository.save(genderMapper.toEntity(request));
 
        return genderMapper.toDto(savedGender);

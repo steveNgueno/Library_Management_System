@@ -3,6 +3,7 @@ package com.example.LMS.controllers;
 import com.example.LMS.dtos.GenderRequestDto;
 import com.example.LMS.dtos.GenderResponseDto;
 import com.example.LMS.services.impl.GenderServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class GenderController {
     private final GenderServiceImpl genderServiceImpl;
 
     @PostMapping("/save")
-    public ResponseEntity<GenderResponseDto> saveGender(@RequestBody GenderRequestDto request){
+    public ResponseEntity<GenderResponseDto> saveGender(@Valid @RequestBody GenderRequestDto request){
 
          GenderResponseDto gender = genderServiceImpl.save(request);
 

@@ -17,6 +17,7 @@ spring:
         format_sql: true
     open-in-view: false
 
+
 server:
   port: 8080
   servlet:
@@ -27,3 +28,4 @@ springdoc:
   exclude-filters:
     - name: com.example.LMS.GlobalExceptionHandler
       type: ASSIGNABLE_TYPE
+
