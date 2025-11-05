@@ -51,18 +51,12 @@ public class StudentServiceImpl implements StudentService {
 
         Student student = findById(id);
 
-        Student updateStudent = Student
-                .builder()
-                .firstname(request.firstname().isBlank() ? student.getFirstname(): request.firstname())
-                .lastname(request.lastname().isBlank() ? student.getLastname(): request.lastname())
-                .birthday(request.birthday() == null ? student.getBirthday(): request.birthday())
-                .email(student.getEmail())
-                .phone(request.phone().isBlank() ? student.getPhone() : request.phone())
-                .loans(student.getLoans())
-                .build();
+        student.setFirstname(request.firstname().isBlank() ? student.getFirstname(): request.firstname());
+        student.setLastname(request.lastname().isBlank() ? student.getLastname(): request.lastname());
+        student.setBirthday(request.birthday() == null ? student.getBirthday(): request.birthday());
+        student.setPhone(request.phone().isBlank() ? student.getPhone() : request.phone());
 
-
-        return studentMapper.toDto(updateStudent);
+        return studentMapper.toDto(studentRepository.save(student));
     }
 
     @Override

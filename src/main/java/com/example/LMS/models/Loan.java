@@ -18,7 +18,7 @@ public class Loan extends BaseEntity{
     @Column(name="loan_date", nullable= false, updatable= false)
     private LocalDate loanDate;
 
-    @Column(name="return_date", nullable= false)
+    @Column(name="return_date")
     private LocalDate returnDate;
 
     @Column(name="is_active")
@@ -31,4 +31,5 @@ public class Loan extends BaseEntity{
     @ManyToOne()
     @JoinColumn(name="student_id", nullable= false)
     private Student student;
+
 }
