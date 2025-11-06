@@ -15,7 +15,7 @@ public interface LoanService {
 
     List<LoanResponseDto> getAllLoans();
 
-    LoanResponseDto makeAReturn(Long id);
+    LoanResponseDto makeAReturn(LoanRequestDto request);
 
     List<LoanResponseDto> getAllLoansByStudent(String email);
 

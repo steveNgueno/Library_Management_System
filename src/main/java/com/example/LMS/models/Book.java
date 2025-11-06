@@ -22,14 +22,14 @@ public class Book extends BaseEntity{
     @Column(name="author", nullable= false)
     private String author;
 
-    @Column(name="publication_year", nullable= false)
+    @Column(name="publication_year")
     private LocalDate publicationYear;
 
     @Column(name="num_of_copies", nullable= false)
     private int numOfCopies;
 
     @ManyToOne()
-    @JoinColumn(name= "gender_id", nullable= false)
+    @JoinColumn(name= "gender_id")
     private Gender gender;
 
     @OneToMany(mappedBy= "book", cascade= CascadeType.ALL, orphanRemoval= true)

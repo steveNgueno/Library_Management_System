@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.stream.Collectors;
+
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -68,10 +70,16 @@ public class GlobalExceptionHandler {
 
         log.error(ex.getMessage());
 
+        String message = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
         ErrorDetails error = ErrorDetails.of(
                 HttpStatus.NOT_FOUND.value(),
-                "Not found",
-                ex.getMessage(),
+                "Validation failed",
+                message,
                 request.getRequestURI()
         );
 

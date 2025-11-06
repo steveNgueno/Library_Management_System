@@ -4,6 +4,7 @@ import com.example.LMS.dtos.LoanRequestDto;
 import com.example.LMS.dtos.LoanResponseDto;
 import com.example.LMS.exceptions.BusinessLogicException;
 import com.example.LMS.services.impl.LoanServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class LoanController {
     private final LoanServiceImpl loanServiceImpl;
 
     @PostMapping("/subscribe")
-    public ResponseEntity<LoanResponseDto> makeABorrow(@RequestBody LoanRequestDto request) throws BusinessLogicException {
+    public ResponseEntity<LoanResponseDto> makeABorrow(@Valid @RequestBody LoanRequestDto request) throws BusinessLogicException {
         return ResponseEntity.ok(loanServiceImpl.makeABorrow(request));
     }
 
@@ -37,8 +38,8 @@ public class LoanController {
         return ResponseEntity.ok(loanServiceImpl.getAllLoansByStudent(email));
     }
 
-    @PutMapping("/return/{id}")
-    public ResponseEntity<LoanResponseDto> makeAReturn(@PathVariable Long id){
-        return ResponseEntity.ok(loanServiceImpl.makeAReturn(id));
+    @PutMapping("/return")
+    public ResponseEntity<LoanResponseDto> makeAReturn(@Valid @RequestBody LoanRequestDto request){
+        return ResponseEntity.ok(loanServiceImpl.makeAReturn(request));
     }
 }

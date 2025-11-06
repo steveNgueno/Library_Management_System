@@ -3,6 +3,7 @@ package com.example.LMS.controllers;
 import com.example.LMS.dtos.BookRequestDto;
 import com.example.LMS.dtos.BookResponseDto;
 import com.example.LMS.services.impl.BookServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class BookController {
     private final BookServiceImpl bookServiceImpl;
 
     @PostMapping("/save")
-    public ResponseEntity<BookResponseDto> createBook(@RequestBody BookRequestDto request){
+    public ResponseEntity<BookResponseDto> createBook(@Valid @RequestBody BookRequestDto request){
 
         BookResponseDto dto = bookServiceImpl.saveBook(request);
 

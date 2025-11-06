@@ -3,9 +3,7 @@ package com.example.LMS.services.impl;
 import com.example.LMS.dtos.LoanRequestDto;
 import com.example.LMS.dtos.LoanResponseDto;
 import com.example.LMS.exceptions.BusinessLogicException;
-import com.example.LMS.mappers.BookMapper;
 import com.example.LMS.mappers.LoanMapper;
-import com.example.LMS.mappers.StudentMapper;
 import com.example.LMS.models.Book;
 import com.example.LMS.models.Loan;
 import com.example.LMS.models.Student;
@@ -13,7 +11,6 @@ import com.example.LMS.repositories.BookRepository;
 import com.example.LMS.repositories.LoanRepository;
 import com.example.LMS.repositories.StudentRepository;
 import com.example.LMS.services.LoanService;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +26,6 @@ import static java.lang.String.format;
 public class LoanServiceImpl implements LoanService {
 
     private final LoanMapper loanMapper;
-    private final BookMapper bookMapper;
-    private final StudentMapper studentMapper;
     private final LoanRepository loanRepository;
     private final StudentRepository studentRepository;
     private final BookRepository bookRepository;
@@ -39,10 +34,10 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponseDto makeABorrow(LoanRequestDto request) throws BusinessLogicException {
 
         //Getting the student by his email in the DB
-        Student student = findByStudentById(request.studentEmail());
+        Student student = findStudentByEmail(request.studentEmail());
 
         //Getting the book by his title in the DB
-        Book book = bookRepository.findByTitle(request.bookTitle()).orElseThrow(()-> new IllegalArgumentException(format("Book with this title: %s not found",request.bookTitle())));
+        Book book = findBookByTitle(request.bookTitle());
 
         //Number of copies of the book
         int copies = book.getNumOfCopies();
@@ -85,20 +80,27 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public LoanResponseDto makeAReturn(Long id) {
+    public LoanResponseDto makeAReturn(LoanRequestDto request) {
 
-        Loan loan = findLoanById(id);
+        Student student = findStudentByEmail(request.studentEmail());
+
+        Book book = findBookByTitle(request.bookTitle());
+
+        Loan loan = loanRepository.findByStudentAndBookAndActive(student,book, true).orElseThrow(()-> new BusinessLogicException("This Student does not have outstanding loan for this book"));
+
+       book.setNumOfCopies(book.getNumOfCopies() + 1);
+       bookRepository.save(book);
 
         loan.setReturnDate(LocalDate.now());
         loan.setActive(false);
 
-        return loanMapper.toDto(loan);
+        return loanMapper.toDto(loanRepository.save(loan));
     }
 
     @Override
     public List<LoanResponseDto> getAllLoansByStudent(String email) {
 
-        List <Loan> loans = loanRepository.getAllLoansByStudent(findByStudentById(email));
+        List <Loan> loans = loanRepository.getAllLoansByStudent(findStudentByEmail(email));
 
         return loanMapper.toDtoList(loans);
     }
@@ -112,8 +114,12 @@ public class LoanServiceImpl implements LoanService {
         return loanRepository.findById(id).orElseThrow(()-> new RuntimeException("Loan not found"));
     }
 
-    private Student findByStudentById(String email){
+    private Student findStudentByEmail(String email){
         return studentRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException(format("Student with this email: %s not found", email)));
 
+    }
+
+    private Book findBookByTitle(String title){
+        return bookRepository.findByTitle(title).orElseThrow(()-> new IllegalArgumentException(format("Book with this title: %s not found",title)));
     }
 }
