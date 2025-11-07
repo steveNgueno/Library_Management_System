@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.stream.Collectors;
 
@@ -16,59 +15,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorDetails> handleRuntimeException(RuntimeException ex, HttpServletRequest request){
-
-        log.error(ex.getMessage());
-
-        ErrorDetails error = ErrorDetails.of(
-              HttpStatus.NOT_FOUND.value(),
-              "Not found",
-              ex.getMessage(),
-              request.getRequestURI()
-      );
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
-
-    @ExceptionHandler(BusinessLogicException.class)
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public ResponseEntity<ErrorDetails> handleBusinessLogicException(BusinessLogicException ex, HttpServletRequest request){
-
-        log.error(ex.getMessage());
-
-        ErrorDetails error = ErrorDetails.of(
-                HttpStatus.NOT_ACCEPTABLE.value(),
-                "Not acceptable",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(error);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorDetails> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request){
-
-        log.error(ex.getMessage());
-
-        ErrorDetails error = ErrorDetails.of(
-                HttpStatus.NOT_FOUND.value(),
-                "Not found",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDetails> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request){
-
-        log.error(ex.getMessage());
 
         String message = ex.getBindingResult()
                 .getFieldErrors()
@@ -77,24 +25,72 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
 
         ErrorDetails error = ErrorDetails.of(
-                HttpStatus.NOT_FOUND.value(),
-                "Validation failed",
+                HttpStatus.BAD_REQUEST.value(),
+                "VALIDATION_FAILED",
                 message,
+                request.getRequestURI()
+        );
+
+        log.warn("Validation failed on {}: {}", request.getRequestURI(), message);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(BusinessLogicException.class)
+    public ResponseEntity<ErrorDetails> handleBusinessLogicException(BusinessLogicException ex, HttpServletRequest request){
+
+        ErrorDetails error = ErrorDetails.of(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getErrorCode(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        log.warn("Business error on {}: {} ({})", request.getRequestURI(), ex.getMessage(), ex.getErrorCode());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDetails> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request){
+
+        log.warn("Illegal argument on {}: {}", request.getRequestURI(), ex.getMessage());
+
+        ErrorDetails error = ErrorDetails.of(
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD_REQUEST",
+                ex.getMessage(),
                 request.getRequestURI()
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorDetails> handleException(Exception ex, HttpServletRequest request){
 
-        log.error("Exception: {}", ex.getMessage());
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorDetails> handleRuntimeException(RuntimeException ex, HttpServletRequest request){
 
         ErrorDetails error = ErrorDetails.of(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                String.valueOf(ex.getCause()),
+                "INTERNAL_ERROR",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        log.error("Unexpected runtime error on {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDetails> handleException(Exception ex, HttpServletRequest request){
+
+        log.error("Unexpected exception on {}: {}", request.getRequestURI(), ex.getMessage(), ex);
+
+        ErrorDetails error = ErrorDetails.of(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "INTERNAL_ERROR",
                 ex.getMessage(),
                 request.getRequestURI()
         );

@@ -2,6 +2,8 @@ package com.example.LMS.services.impl;
 
 import com.example.LMS.dtos.StudentRequestDto;
 import com.example.LMS.dtos.StudentResponseDto;
+import com.example.LMS.exceptions.BusinessLogicException;
+import com.example.LMS.exceptions.StudentNotFoundException;
 import com.example.LMS.mappers.StudentMapper;
 import com.example.LMS.models.Student;
 import com.example.LMS.repositories.StudentRepository;
@@ -13,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +27,11 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponseDto save(StudentRequestDto request) {
 
-        if (request == null) {
-            throw new RuntimeException("Please fill all the fields");
+        if(studentRepository.existsByEmail(request.email())){
+            throw new BusinessLogicException("this email already exists","EMAIL_ALREADY_EXISTS");
+        }
+        if(studentRepository.existsByPhone(request.phone())){
+            throw new BusinessLogicException("this phone number already exists", "PHONE_ALREADY_EXISTS");
         }
 
         Student student = studentRepository.save(studentMapper.toEntity(request));
@@ -66,6 +70,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private Student findById(Long id){
-        return studentRepository.findById(id).orElseThrow(() -> new RuntimeException(format("Student with this id: %s not found", id)));
+        return studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
     }
 }

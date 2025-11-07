@@ -2,6 +2,7 @@ package com.example.LMS.services.impl;
 
 import com.example.LMS.dtos.GenderRequestDto;
 import com.example.LMS.dtos.GenderResponseDto;
+import com.example.LMS.exceptions.BusinessLogicException;
 import com.example.LMS.mappers.GenderMapper;
 import com.example.LMS.models.Gender;
 import com.example.LMS.repositories.GenderRepository;
@@ -27,7 +28,7 @@ public class GenderServiceImpl implements GenderService {
     public GenderResponseDto save(GenderRequestDto request) {
 
         if(genderRepository.existsByName(request.name())){
-            throw new IllegalArgumentException("This genre already exists");
+            throw new BusinessLogicException("This genre already exists","GENDER_ALREADY_EXISTS");
         }
 
         Gender savedGender = genderRepository.save(genderMapper.toEntity(request));
@@ -63,6 +64,6 @@ public class GenderServiceImpl implements GenderService {
     }
 
     private Gender findGenderById(Long id){
-        return genderRepository.findById(id).orElseThrow(() -> new RuntimeException(format("Gender with this id: %s not found", id)));
+        return genderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(format("Gender with this id: %s not found", id)));
     }
 }

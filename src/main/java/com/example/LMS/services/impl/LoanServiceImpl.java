@@ -2,7 +2,9 @@ package com.example.LMS.services.impl;
 
 import com.example.LMS.dtos.LoanRequestDto;
 import com.example.LMS.dtos.LoanResponseDto;
+import com.example.LMS.exceptions.BookNotFoundException;
 import com.example.LMS.exceptions.BusinessLogicException;
+import com.example.LMS.exceptions.StudentNotFoundException;
 import com.example.LMS.mappers.LoanMapper;
 import com.example.LMS.models.Book;
 import com.example.LMS.models.Loan;
@@ -44,13 +46,13 @@ public class LoanServiceImpl implements LoanService {
 
         //Checking if it has available copy of this book
         if(copies == 0){
-            throw new BusinessLogicException(format("Book with this title : %s not available", request.bookTitle()));
+            throw new BusinessLogicException(format("Book with this title : %s not available", request.bookTitle()), "BOOK_NOT_AVAILABLE");
         }
 
         //Checking if the student has an outstanding loan
         for(Loan loan : student.getLoans()){
             if(loan.isActive()){
-                throw new BusinessLogicException(format("Student with this email: %s has an outstanding loan  ", request.studentEmail()));
+                throw new BusinessLogicException(format("Student with this email: %s has an outstanding loan  ", request.studentEmail()),"STUDENT_NOT_ELIGIBLE");
             }
         }
 
@@ -59,10 +61,9 @@ public class LoanServiceImpl implements LoanService {
         bookRepository.save(book);
 
         //Building and saving the current loan in DB
-        LoanResponseDto response = new LoanResponseDto(LocalDate.now(),null,true,request.bookTitle(),request.studentEmail());
-
-        Loan loan = loanMapper.toEntity(response);
-
+        Loan loan = loanMapper.toEntity(request);
+        loan.setLoanDate(LocalDate.now());
+        loan.setActive(true);
         loan.setStudent(student);
         loan.setBook(book);
 
@@ -86,7 +87,7 @@ public class LoanServiceImpl implements LoanService {
 
         Book book = findBookByTitle(request.bookTitle());
 
-        Loan loan = loanRepository.findByStudentAndBookAndActive(student,book, true).orElseThrow(()-> new BusinessLogicException("This Student does not have outstanding loan for this book"));
+        Loan loan = loanRepository.findByStudentAndBookAndActive(student,book, true).orElseThrow(() -> new BusinessLogicException("This student doesn't have an outstanding loan for this book","ACTIVE_LOAN_NOT_FOUND"));
 
        book.setNumOfCopies(book.getNumOfCopies() + 1);
        bookRepository.save(book);
@@ -111,15 +112,15 @@ public class LoanServiceImpl implements LoanService {
     }
 
     private Loan findLoanById(Long id){
-        return loanRepository.findById(id).orElseThrow(()-> new RuntimeException("Loan not found"));
+        return loanRepository.findById(id).orElseThrow(()-> new BusinessLogicException("Loan not found", "LOAN_NOT_FOUND"));
     }
 
     private Student findStudentByEmail(String email){
-        return studentRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException(format("Student with this email: %s not found", email)));
+        return studentRepository.findByEmail(email).orElseThrow(() -> new StudentNotFoundException(email));
 
     }
 
     private Book findBookByTitle(String title){
-        return bookRepository.findByTitle(title).orElseThrow(()-> new IllegalArgumentException(format("Book with this title: %s not found",title)));
+        return bookRepository.findByTitle(title).orElseThrow(()-> new BookNotFoundException(title));
     }
 }

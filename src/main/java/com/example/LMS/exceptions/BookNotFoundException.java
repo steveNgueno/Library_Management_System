@@ -1,0 +1,14 @@
+package com.example.LMS.exceptions;
+
+import static java.lang.String.format;
+
+public class BookNotFoundException extends BusinessLogicException {
+
+    public BookNotFoundException(Long id) {
+        super(format("Book with this id: %s not found", id), "BOOK_NOT_FOUND");
+    }
+
+    public BookNotFoundException(String title){
+        super(format("Book with this title: %s not found",title), "BOOK_NOT_FOUND");
+    }
+}

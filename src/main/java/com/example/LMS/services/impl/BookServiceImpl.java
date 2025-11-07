@@ -2,6 +2,7 @@ package com.example.LMS.services.impl;
 
 import com.example.LMS.dtos.BookRequestDto;
 import com.example.LMS.dtos.BookResponseDto;
+import com.example.LMS.exceptions.BookNotFoundException;
 import com.example.LMS.mappers.BookMapper;
 import com.example.LMS.models.Book;
 import com.example.LMS.models.Gender;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static java.lang.String.format;
+
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class BookServiceImpl implements BookService {
     public BookResponseDto saveBook(BookRequestDto request) {
 
          //check if the gender exists
-        Gender gender = genderRepository.findById(request.genderId()).orElseThrow(() -> new RuntimeException("gender not found"));
+        Gender gender = genderRepository.findById(request.genderId()).orElseThrow(() -> new IllegalArgumentException("gender not found"));
 
         Book book = bookMapper.toEntity(request);
         book.setGender(gender);
@@ -81,7 +82,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book findBookById(Long id){
-        return bookRepository.findById(id).orElseThrow(() -> new RuntimeException(format("Book with this id: %s not found", id)));
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
     }
 
 }

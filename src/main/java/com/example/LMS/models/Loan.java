@@ -22,7 +22,7 @@ public class Loan extends BaseEntity{
     private LocalDate returnDate;
 
     @Column(name="is_active")
-    private boolean isActive;
+    private boolean active;
 
     @ManyToOne()
     @JoinColumn(name="book_id" , nullable= false)
