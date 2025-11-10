@@ -18,6 +18,7 @@ public interface LoanMapper {
     @Mapping(target="bookTitle", source="book.title")
     @Mapping(target="emailStudent", source="student.email")
     @Mapping(target="active", source="active")
+    @Mapping(target="expectedReturnDate", source="expectedReturnDate")
     LoanResponseDto toDto(Loan loan);
 
     List<LoanResponseDto> toDtoList(List<Loan> loans);

@@ -63,6 +63,7 @@ public class LoanServiceImpl implements LoanService {
         //Building and saving the current loan in DB
         Loan loan = loanMapper.toEntity(request);
         loan.setLoanDate(LocalDate.now());
+        loan.setExpectedReturnDate(LocalDate.now().plusDays(30));
         loan.setActive(true);
         loan.setStudent(student);
         loan.setBook(book);

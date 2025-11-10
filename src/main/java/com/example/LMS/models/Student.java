@@ -33,4 +33,7 @@ public class Student extends BaseEntity{
     @OneToMany(mappedBy= "student", cascade= CascadeType.ALL, orphanRemoval = true )
     private List<Loan> loans;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval= true)
+    private List<Notification> notifications;
+
 }

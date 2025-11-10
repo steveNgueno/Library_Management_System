@@ -55,10 +55,10 @@ public class StudentServiceImpl implements StudentService {
 
         Student student = findById(id);
 
-        student.setFirstname(request.firstname().isBlank() ? student.getFirstname(): request.firstname());
-        student.setLastname(request.lastname().isBlank() ? student.getLastname(): request.lastname());
+        student.setFirstname(request.firstname() == null ||request.firstname().isBlank() ? student.getFirstname(): request.firstname());
+        student.setLastname(request.lastname() == null || request.lastname().isBlank() ? student.getLastname(): request.lastname());
         student.setBirthday(request.birthday() == null ? student.getBirthday(): request.birthday());
-        student.setPhone(request.phone().isBlank() ? student.getPhone() : request.phone());
+        student.setPhone(request.phone() == null || request.phone().isBlank() ? student.getPhone() : request.phone());
 
         return studentMapper.toDto(studentRepository.save(student));
     }

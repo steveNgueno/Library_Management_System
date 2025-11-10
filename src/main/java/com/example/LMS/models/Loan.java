@@ -21,6 +21,9 @@ public class Loan extends BaseEntity{
     @Column(name="return_date")
     private LocalDate returnDate;
 
+    @Column(name = "expected_return_date", nullable = false, updatable= false)
+    private LocalDate expectedReturnDate;
+
     @Column(name="is_active")
     private boolean active;
 
