@@ -28,6 +28,9 @@ public class Book extends BaseEntity{
     @Column(name="num_of_copies", nullable= false)
     private int numOfCopies;
 
+    @Column(name="available_copies")
+    private int availableCopies;
+
     @ManyToOne()
     @JoinColumn(name= "gender_id")
     private Gender gender;

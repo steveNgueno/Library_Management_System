@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.joining("; "));
+                .collect(Collectors.joining(", "));
 
         ErrorDetails error = ErrorDetails.of(
                 HttpStatus.BAD_REQUEST.value(),

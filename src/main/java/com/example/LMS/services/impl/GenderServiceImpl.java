@@ -47,7 +47,11 @@ public class GenderServiceImpl implements GenderService {
     @Override
     public void deleteById(Long id) {
 
-        findGenderById(id);
+        Gender gender = findGenderById(id);
+
+        if(!gender.getBooks().isEmpty()){
+            throw new BusinessLogicException("This gender cannot be deleted", "NOT-REMOVABLE_GENDER");
+        }
 
         genderRepository.deleteById(id);
 
@@ -64,6 +68,6 @@ public class GenderServiceImpl implements GenderService {
     }
 
     private Gender findGenderById(Long id){
-        return genderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(format("Gender with this id: %s not found", id)));
+        return genderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(format("Gender with id: %s not found", id)));
     }
 }

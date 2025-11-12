@@ -57,7 +57,7 @@ public class LoanServiceImpl implements LoanService {
         }
 
         //Updating of the number of copies of the book and saving the book in the DB
-        book.setNumOfCopies(copies - 1);
+        book.setAvailableCopies(copies - 1);
         bookRepository.save(book);
 
         //Building and saving the current loan in DB

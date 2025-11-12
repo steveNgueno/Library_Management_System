@@ -49,8 +49,8 @@ public class NotificationServiceImpl implements NotificationService {
                     message
             );
 
-            emailService.sendEmail(
-                    "",
+          emailService.sendEmail(
+                    "yougangyollande11@gmail.com",
                     "Book not return : "+book.getTitle(),
                     "Student "+student.getFirstname()+" "+student.getLastname()+ "don't return the book '"+book.getTitle() + "' in the expected return date (" +loan.getExpectedReturnDate() +")."
             );

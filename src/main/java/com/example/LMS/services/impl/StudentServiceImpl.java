@@ -65,7 +65,11 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void delete(Long id) {
-        findById(id);
+
+        if(studentRepository.existsByIdAndLoansActive(id, true)){
+            throw new BusinessLogicException("This student can't be removed because he has an outstanding loan","NOT-REMOVABLE_STUDENT");
+        }
+
         studentRepository.deleteById(id);
     }
 

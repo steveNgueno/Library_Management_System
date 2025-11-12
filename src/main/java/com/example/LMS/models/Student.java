@@ -18,7 +18,7 @@ public class Student extends BaseEntity{
     @Column(name="firstname", nullable= false)
     private String firstname;
 
-    @Column(name="lastname", nullable= false)
+    @Column(name="lastname")
     private String lastname;
 
     @Column(name="birthday", nullable= false)
