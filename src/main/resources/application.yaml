@@ -2,6 +2,9 @@ spring:
   application:
     name: Library-Management-System
 
+  profiles:
+    active: dev
+
   datasource:
     url: jdbc:mysql://localhost:3307/LMS_DB?useSSL=false&serverTimezone=UTC
     username: root
@@ -34,6 +37,12 @@ server:
   port: 8080
   servlet:
     context-path: /api
+
+twilio:
+  account-sid: "${TWILIO_ACCOUNT_SID:***REMOVED_TWILIO_SID***}"
+  auth-token: "${TWILIO_AUTH_TOKEN:a44bc0dd1f9c20541b9259ae980d7dae}"
+  whatsapp-from: "${TWILIO_WHATSAPP_FROM:whatsapp:+14155238886}"
+
 
 springdoc:
   packages-to-scan: com.example.LMS.controllers
