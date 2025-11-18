@@ -2,10 +2,9 @@ package com.example.LMS.service.impl;
 
 import com.example.LMS.service.MessageService;
 import com.twilio.Twilio;
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,19 +13,20 @@ import com.twilio.rest.api.v2010.account.Message;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-    @Value("${twilio.account.sid}")
-    private String accountSid;
-
-    @Value("${twilio.auth.token}")
-    private String authToken;
-
-    @Value("${twilio.whatsapp.from}")
-    private String fromWhatsapp;
-
+    private final String accountSid;
+    private final String authToken;
+    private final String twilioNumber;
     private final JavaMailSender mailSender;
+
+    public MessageServiceImpl(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+        this.accountSid = dotenv.get("TWILIO_ACCOUNT_SID");
+        this.authToken = dotenv.get("TWILIO_AUTH_TOKEN");
+        this.twilioNumber = dotenv.get("TWILIO_PHONE_NUMBER");
+    }
 
     @PostConstruct
     public void initTwilio(){
@@ -62,7 +62,7 @@ public class MessageServiceImpl implements MessageService {
         try {
             Message.creator(
                     new com.twilio.type.PhoneNumber(toWhatsapp),
-                    new com.twilio.type.PhoneNumber(fromWhatsapp),
+                    new com.twilio.type.PhoneNumber(twilioNumber),
                     message
             ).create();
 
