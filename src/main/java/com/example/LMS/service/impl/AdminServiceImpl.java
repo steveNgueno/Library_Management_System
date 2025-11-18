@@ -1,5 +1,6 @@
 package com.example.LMS.service.impl;
 
+import com.example.LMS.domain.Enum.Role;
 import com.example.LMS.domain.model.Admin;
 import com.example.LMS.domain.request.AdminRequestDto;
 import com.example.LMS.domain.response.AdminResponseDto;
@@ -35,9 +36,13 @@ public class AdminServiceImpl implements AdminService {
             throw new BusinessLogicException("this staff ID already exists", "STAFF_ID_ALREADY_EXISTS");
         }
 
-        Admin admin = adminRepository.save(adminMapper.toEntity(request));
+        Admin admin = adminMapper.toEntity(request);
 
-        return adminMapper.toDto(admin);
+        admin.setRole(Role.ADMIN);
+
+        Admin savedAdmin = adminRepository.save(admin);
+
+        return adminMapper.toDto(savedAdmin);
     }
 
     @Override

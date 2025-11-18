@@ -42,7 +42,7 @@ public class LoanServiceImpl implements LoanService {
         Book book = findBookByTitle(request.bookTitle());
 
         //Number of copies of the book
-        int copies = book.getNumOfCopies();
+        int copies = book.getAvailableCopies();
 
         //Checking if it has available copy of this book
         if(copies == 0){
@@ -90,7 +90,7 @@ public class LoanServiceImpl implements LoanService {
 
         Loan loan = loanRepository.findByStudentAndBookAndActive(student,book, true).orElseThrow(() -> new BusinessLogicException("This student doesn't have an outstanding loan for this book","ACTIVE_LOAN_NOT_FOUND"));
 
-       book.setNumOfCopies(book.getNumOfCopies() + 1);
+       book.setAvailableCopies(book.getNumOfCopies() + 1);
        bookRepository.save(book);
 
         loan.setReturnDate(LocalDate.now());

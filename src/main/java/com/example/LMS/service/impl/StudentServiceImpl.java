@@ -1,5 +1,6 @@
 package com.example.LMS.service.impl;
 
+import com.example.LMS.domain.Enum.Role;
 import com.example.LMS.domain.request.StudentRequestDto;
 import com.example.LMS.domain.response.StudentResponseDto;
 import com.example.LMS.exception.BusinessLogicException;
@@ -41,9 +42,13 @@ public class StudentServiceImpl implements StudentService {
             throw new BusinessLogicException("this student ID already exists", "STUDENT_ID_ALREADY_EXISTS");
         }
 
-        Student student = studentRepository.save(studentMapper.toEntity(request));
+        Student student = studentMapper.toEntity(request);
 
-        return studentMapper.toDto(student);
+        student.setRole(Role.STUDENT);
+
+        Student savedStudent = studentRepository.save(student);
+
+        return studentMapper.toDto(savedStudent);
     }
 
     @Override

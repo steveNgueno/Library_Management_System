@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
-    private final MessageServiceImpl messageService;
+    private final MessageServiceImpl messageServiceImpl;
     private final NotificationRepository notificationRepository;
     private final LoanRepository loanRepository;
     private final StudentRepository studentRepository;
@@ -43,19 +43,19 @@ public class NotificationServiceImpl implements NotificationService {
             String subject = "Overdue return of book";
             String message = "Good morning "+student.getFirstname()+ ", \n\n" + "The expected return date for the book '" + book.getTitle() + "' has passed since "+loan.getExpectedReturnDate() + ".\n" + "Please return it as soon as possible";
 
-            messageService.sendEmail(
+            messageServiceImpl.sendEmail(
                     student.getEmail(),
                     subject,
                     message
             );
 
-          messageService.sendEmail(
+          messageServiceImpl.sendEmail(
                     "yougangyollande11@gmail.com",
                     "Book not return : "+book.getTitle(),
                     "Student "+student.getFirstname()+" "+student.getLastname()+ "don't return the book '"+book.getTitle() + "' in the expected return date (" +loan.getExpectedReturnDate() +")."
             );
 
-          messageService.sendWhatsappMessage(
+          messageServiceImpl.sendWhatsappMessage(
             student.getPhone(),
             message
           );
@@ -75,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationDto> getNotificationsByStudent(Long id) {
 
-        Student student = studentRepository.findById(id).orElseThrow(() -> new UserNotFoundException("Student not found with id: "+id));
+        Student student = studentRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
 
         List<Notification> notifications = student.getNotifications();
 

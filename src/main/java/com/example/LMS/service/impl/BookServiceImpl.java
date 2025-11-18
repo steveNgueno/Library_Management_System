@@ -31,7 +31,7 @@ public class BookServiceImpl implements BookService {
     public BookResponseDto saveBook(BookRequestDto request) {
 
          //check if the gender exists
-        Gender gender = genderRepository.findById(request.genderId()).orElseThrow(() -> new IllegalArgumentException("gender not found"));
+        Gender gender = findGenderById(request.genderId());
 
         if(bookRepository.existsByTitle(request.title())){
             throw new BusinessLogicException("Book with title '"+request.title()+"' already exists", "BOOK_ALREADY_EXISTS");
@@ -63,12 +63,27 @@ public class BookServiceImpl implements BookService {
         Book book = findBookById(id);
 
         int borrowedBook = book.getNumOfCopies() - book.getAvailableCopies();
+        int numOfCopies = book.getNumOfCopies();
+        int NewNumOfCopies = request.numOfCopies();
+        int availableCopies = book.getAvailableCopies();
+        int difference;
 
-        if(request.numOfCopies() < borrowedBook){
+
+        if(NewNumOfCopies < borrowedBook){
             throw new BusinessLogicException("The number of copies can't be less than the number of copies currently on loan", "BAD_REQUEST");
         }
 
+        if(NewNumOfCopies > numOfCopies){
+            difference = NewNumOfCopies - numOfCopies;
+            book.setAvailableCopies(availableCopies + difference);
+        }else{
+            difference = numOfCopies - NewNumOfCopies;
+            book.setAvailableCopies(availableCopies - difference);
+        }
+
         book.setNumOfCopies(request.numOfCopies());
+
+        book.setGender(request.genderId() == null ? book.getGender() : findGenderById(request.genderId()));
 
         Book savedBook = bookRepository.save(book);
 
@@ -99,6 +114,10 @@ public class BookServiceImpl implements BookService {
 
     private Book findBookById(Long id){
         return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+    }
+
+    private Gender findGenderById(Long id){
+        return genderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("gender not found"));
     }
 
 }

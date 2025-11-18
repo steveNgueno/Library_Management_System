@@ -45,8 +45,8 @@ twilio:
 
 
 springdoc:
-  packages-to-scan: com.example.LMS.controllers
+  packages-to-scan: com.example.LMS.controller
   exclude-filters:
-    - name: com.example.LMS.GlobalExceptionHandler
+      name: com.example.LMS.controller.advice.GlobalExceptionHandler
       type: ASSIGNABLE_TYPE
 
