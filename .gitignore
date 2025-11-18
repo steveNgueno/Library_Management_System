@@ -12,7 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
-.yaml
+
 
 ### IntelliJ IDEA ###
 .idea
@@ -37,3 +37,5 @@ build/
 # Local environment variables
 .env
 *.env
+.yaml
+*.yaml
