@@ -60,7 +60,7 @@ public class MessageServiceImpl implements MessageService {
         String toWhatsapp = "whatsapp:" + to.replaceAll("[^0-9]", "");
 
         try {
-            Message twilioMessage = Message.creator(
+            Message.creator(
                     new com.twilio.type.PhoneNumber(toWhatsapp),
                     new com.twilio.type.PhoneNumber(fromWhatsapp),
                     message
