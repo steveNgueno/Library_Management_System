@@ -1,5 +1,8 @@
 package com.example.LMS.service.impl;
 
+import com.example.LMS.domain.Enum.Action;
+import com.example.LMS.domain.Enum.Status;
+import com.example.LMS.domain.model.History;
 import com.example.LMS.domain.request.BookRequestDto;
 import com.example.LMS.domain.response.BookResponseDto;
 import com.example.LMS.exception.BookNotFoundException;
@@ -26,6 +29,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final GenderRepository genderRepository;
+    private final HistoryServiceImpl historyService;
 
     @Override
     public BookResponseDto saveBook(BookRequestDto request) {
@@ -34,6 +38,7 @@ public class BookServiceImpl implements BookService {
         Gender gender = findGenderById(request.genderId());
 
         if(bookRepository.existsByTitle(request.title())){
+            historyService.create(Status.FAILED,Action.ADD_BOOK, "failed to add book");
             throw new BusinessLogicException("Book with title '"+request.title()+"' already exists", "BOOK_ALREADY_EXISTS");
         }
 
@@ -41,8 +46,10 @@ public class BookServiceImpl implements BookService {
         book.setAvailableCopies(request.numOfCopies());
         book.setGender(gender);
 
+
         //save the book in the database
         Book savedBook = bookRepository.save(book);
+        historyService.create(Status.SUCCESS, Action.ADD_BOOK,String.format("The book %s has been added",request.title()));
 
         return bookMapper.toDto(savedBook);
     }
@@ -70,6 +77,7 @@ public class BookServiceImpl implements BookService {
 
 
         if(NewNumOfCopies < borrowedBook){
+            historyService.create(Status.FAILED, Action.UPDATE_BOOK,String.format("Failed to update '%s' ",request.title()));
             throw new BusinessLogicException("The number of copies can't be less than the number of copies currently on loan", "BAD_REQUEST");
         }
 
@@ -86,7 +94,7 @@ public class BookServiceImpl implements BookService {
         book.setGender(request.genderId() == null ? book.getGender() : findGenderById(request.genderId()));
 
         Book savedBook = bookRepository.save(book);
-
+        historyService.create(Status.SUCCESS, Action.UPDATE_BOOK,String.format("The book %s has been updated",request.title()));
         return bookMapper.toDto(savedBook);
     }
 
@@ -105,10 +113,12 @@ public class BookServiceImpl implements BookService {
         Book book = findBookById(id);
 
         if(book.getAvailableCopies() != book.getNumOfCopies()){
+            historyService.create(Status.FAILED, Action.REMOVE_BOOK,String.format("Failed to remove '%s' ",book.getTitle()));
             throw new BusinessLogicException("This book can't be removed because there is one or more copies that have been borrowed","NOT-REMOVABLE_BOOK");
         }
 
         bookRepository.deleteById(id);
+        historyService.create(Status.SUCCESS, Action.REMOVE_BOOK,String.format("The book %s has been updated",book.getTitle()));
 
     }
 

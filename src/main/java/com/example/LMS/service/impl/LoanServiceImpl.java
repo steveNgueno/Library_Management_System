@@ -1,5 +1,7 @@
 package com.example.LMS.service.impl;
 
+import com.example.LMS.domain.Enum.Action;
+import com.example.LMS.domain.Enum.Status;
 import com.example.LMS.domain.request.LoanRequestDto;
 import com.example.LMS.domain.response.LoanResponseDto;
 import com.example.LMS.exception.BookNotFoundException;
@@ -31,6 +33,7 @@ public class LoanServiceImpl implements LoanService {
     private final LoanRepository loanRepository;
     private final StudentRepository studentRepository;
     private final BookRepository bookRepository;
+    private final HistoryServiceImpl historyService;
 
     @Override
     public LoanResponseDto makeABorrow(LoanRequestDto request) throws BusinessLogicException {
@@ -46,12 +49,14 @@ public class LoanServiceImpl implements LoanService {
 
         //Checking if it has available copy of this book
         if(copies == 0){
+            historyService.create(Status.FAILED, Action.MAKE_BORROW,format("Failed to make a borrow of the book with title %s because it is not available",book.getTitle()));
             throw new BusinessLogicException(format("Book with this title : %s not available", request.bookTitle()), "BOOK_NOT_AVAILABLE");
         }
 
         //Checking if the student has an outstanding loan
         for(Loan loan : student.getLoans()){
             if(loan.isActive()){
+                historyService.create(Status.FAILED, Action.MAKE_BORROW,format("Failed to make a borrow of the book with title %s because the student %s %s has an outstanding loan",book.getTitle(),student.getFirstname(),student.getLastname()));
                 throw new BusinessLogicException(format("Student with this email: %s has an outstanding loan  ", request.studentEmail()),"STUDENT_NOT_ELIGIBLE");
             }
         }
@@ -67,6 +72,8 @@ public class LoanServiceImpl implements LoanService {
         loan.setActive(true);
         loan.setStudent(student);
         loan.setBook(book);
+
+        historyService.create(Status.SUCCESS, Action.MAKE_BORROW,format("A borrow of %s has been performed by %s %s ",book.getTitle(),student.getFirstname(),student.getLastname()));
 
         return loanMapper.toDto(loanRepository.save(loan));
     }
@@ -96,7 +103,11 @@ public class LoanServiceImpl implements LoanService {
         loan.setReturnDate(LocalDate.now());
         loan.setActive(false);
 
-        return loanMapper.toDto(loanRepository.save(loan));
+        Loan savedLoan = loanRepository.save(loan);
+
+        historyService.create(Status.SUCCESS, Action.MAKE_RETURN,format("A return of %s has been performed by %s %s ",book.getTitle(),student.getFirstname(),student.getLastname()));
+
+        return loanMapper.toDto(savedLoan);
     }
 
     @Override

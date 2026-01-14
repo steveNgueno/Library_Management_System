@@ -1,6 +1,8 @@
 package com.example.LMS.service.impl;
 
+import com.example.LMS.domain.Enum.Action;
 import com.example.LMS.domain.Enum.Role;
+import com.example.LMS.domain.Enum.Status;
 import com.example.LMS.domain.model.Admin;
 import com.example.LMS.domain.request.AdminRequestDto;
 import com.example.LMS.domain.response.AdminResponseDto;
@@ -22,6 +24,8 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private final StudentRepository studentRepository;
     private final AdminMapper adminMapper;
+    private final HistoryServiceImpl historyService;
+
 
     @Override
     public AdminResponseDto save(AdminRequestDto request) {
@@ -41,6 +45,8 @@ public class AdminServiceImpl implements AdminService {
         admin.setRole(Role.ADMIN);
 
         Admin savedAdmin = adminRepository.save(admin);
+
+        historyService.create(Status.SUCCESS, Action.ADD_USER,String.format("User %s has been added",request.firstname()));
 
         return adminMapper.toDto(savedAdmin);
     }
@@ -69,13 +75,19 @@ public class AdminServiceImpl implements AdminService {
         admin.setPosition(request.position() == null || request.position().isBlank() ? admin.getPosition() : request.position());
         admin.setStaffId(request.staffId() == null || request.staffId().isBlank() ? admin.getStaffId() : request.staffId());
 
+        historyService.create(Status.SUCCESS, Action.UPDATE_USER,String.format("User's infos %s have been updated",request.firstname()));
+
         return adminMapper.toDto(adminRepository.save(admin));
     }
 
     @Override
     public void delete(Long id) {
 
+        Admin admin = findById(id);
+
         adminRepository.deleteById(id);
+
+        historyService.create(Status.SUCCESS, Action.REMOVE_USER,String.format("User %s has been removed",admin.getFirstname()));
     }
 
     private Admin findById(Long id){

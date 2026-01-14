@@ -1,56 +1,58 @@
 package com.example.LMS.service.impl;
 
+import com.example.LMS.config.SendGridConfig;
+import com.example.LMS.config.TwilioConfig;
+import com.example.LMS.domain.Enum.Action;
+import com.example.LMS.domain.Enum.Status;
 import com.example.LMS.service.MessageService;
-import com.twilio.Twilio;
-import io.github.cdimascio.dotenv.Dotenv;
-import jakarta.annotation.PostConstruct;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import com.twilio.rest.api.v2010.account.Message;
 
+import java.io.IOException;
+
 @Service
 @Slf4j
+@AllArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-    private final String accountSid;
-    private final String authToken;
-    private final String twilioNumber;
-    private final JavaMailSender mailSender;
-
-    public MessageServiceImpl(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-        this.accountSid = dotenv.get("TWILIO_ACCOUNT_SID");
-        this.authToken = dotenv.get("TWILIO_AUTH_TOKEN");
-        this.twilioNumber = dotenv.get("TWILIO_PHONE_NUMBER");
-    }
-
-    @PostConstruct
-    public void initTwilio(){
-        Twilio.init(accountSid,authToken);
-        log.info("Twilio initialized with Account SID: {}", accountSid);
-    }
-
+    private final SendGridConfig sendGrid;
+    private final TwilioConfig twilio;
+    private final HistoryServiceImpl historyService;
 
 
     @Override
-    public void sendEmail(String to, String subject, String text) {
+    public void sendEmail(String recipient, String subject, String body) {
         try{
-            SimpleMailMessage message = new SimpleMailMessage();
+            Email from = new Email(sendGrid.getFromEmail());
+            Email to = new Email(recipient);
 
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(text);
-            message.setFrom("nguenosteve3@gmail.com");
+            Content content = new Content("text/plain", body);
 
-            mailSender.send(message);
-            log.info("Email sent to : {}", to);
+            Mail mail = new Mail(from, subject, to, content);
 
-        }catch(MailException e){
-            log.error("An error occurred while sending of email : {}", String.valueOf(e.getCause()));
+            Request request = new Request();
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+
+            log.info("Email sent successfully to : {}", to);
+
+            historyService.create(Status.SUCCESS, Action.SEND_NOTIFICATION,String.format("Notification email sent to %s", to));
+
+        } catch (IOException e) {
+
+            log.error("Error while sending email to {}", recipient, e);
+            historyService.create(Status.FAILED, Action.SEND_NOTIFICATION,String.format("Error while sending email %s", recipient));
+
+        } catch(Exception unexpected ){
+            log.error("Unexpected error while sending emailMS", unexpected);
         }
     }
 
@@ -62,13 +64,18 @@ public class MessageServiceImpl implements MessageService {
         try {
             Message.creator(
                     new com.twilio.type.PhoneNumber(toWhatsapp),
-                    new com.twilio.type.PhoneNumber(twilioNumber),
+                    new com.twilio.type.PhoneNumber(twilio.getTwilioNumber()),
                     message
             ).create();
 
             log.info("WhatsApp message sent successfully to: {}", to);
+            historyService.create(Status.SUCCESS, Action.SEND_NOTIFICATION,String.format("WhatsApp message sent successfully to: %s ", to));
+
         } catch (Exception e) {
+
             log.error("Failed to send WhatsApp message to {}: {}", to, e.getMessage(), e);
+            historyService.create(Status.FAILED, Action.SEND_NOTIFICATION,String.format("Failed to send WhatsApp message to: %s ", to));
+
             throw new RuntimeException("Unable to send WhatsApp message", e);
         }
     }

@@ -1,0 +1,54 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: lms-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: LMS_DB
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -e 'SELECT 1' >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    networks:
+      - lms-network
+
+  lms-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lms-service
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/LMS_DB?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+      # Twilio settings
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:}
+      TWILIO_PHONE_NUMBER: +14155238886
+      # SendGrid settings
+      API_KEY: ${API_KEY:}
+      FROM_EMAIL: nguenosteve3@gmail.com
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - lms-network
+
+networks:
+  lms-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

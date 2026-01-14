@@ -1,6 +1,8 @@
 package com.example.LMS.service.impl;
 
+import com.example.LMS.domain.Enum.Action;
 import com.example.LMS.domain.Enum.Role;
+import com.example.LMS.domain.Enum.Status;
 import com.example.LMS.domain.request.StudentRequestDto;
 import com.example.LMS.domain.response.StudentResponseDto;
 import com.example.LMS.exception.BusinessLogicException;
@@ -26,6 +28,8 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final AdminRepository adminRepository;
     private final StudentMapper studentMapper;
+    private final HistoryServiceImpl historyService;
+
 
     @Override
     public StudentResponseDto save(StudentRequestDto request) {
@@ -47,6 +51,8 @@ public class StudentServiceImpl implements StudentService {
         student.setRole(Role.STUDENT);
 
         Student savedStudent = studentRepository.save(student);
+
+        historyService.create(Status.SUCCESS, Action.ADD_USER,String.format("User %s has been added",request.firstname()));
 
         return studentMapper.toDto(savedStudent);
     }
@@ -74,18 +80,27 @@ public class StudentServiceImpl implements StudentService {
         student.setStudentId(request.studentId() == null || request.studentId().isBlank() ? student.getStudentId() : request.studentId());
         student.setProgram(request.program() == null || request.program().isBlank() ? student.getProgram() : request.program());
 
+        Student savedStudent = studentRepository.save(student);
 
-        return studentMapper.toDto(studentRepository.save(student));
+        historyService.create(Status.SUCCESS, Action.UPDATE_USER,String.format("User's infos %s have been updated",request.firstname()));
+        return studentMapper.toDto(savedStudent);
     }
 
     @Override
     public void delete(Long id) {
 
+        Student student = findById(id);
+
         if(studentRepository.existsByIdAndLoansActive(id, true)){
+
+            historyService.create(Status.FAILED, Action.REMOVE_USER,String.format("Failed to remove %s %s because he has an outstanding loan",student.getFirstname(),student.getLastname()));
+
             throw new BusinessLogicException("This student can't be removed because he has an outstanding loan","NOT-REMOVABLE_STUDENT");
         }
 
         studentRepository.deleteById(id);
+
+        historyService.create(Status.SUCCESS, Action.REMOVE_USER,String.format("User %s %s has been removed",student.getFirstname(),student.getLastname()));
     }
 
     private Student findById(Long id){
