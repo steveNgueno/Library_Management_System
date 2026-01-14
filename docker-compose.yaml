@@ -35,6 +35,7 @@ services:
       TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:}
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:}
       TWILIO_PHONE_NUMBER: +14155238886
+
       # SendGrid settings
       API_KEY: ${API_KEY:}
       FROM_EMAIL: nguenosteve3@gmail.com
