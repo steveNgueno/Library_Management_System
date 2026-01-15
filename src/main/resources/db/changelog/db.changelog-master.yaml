@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: migrations/001-create-initial-schema.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: migrations/002-insert-initial-data.yaml
+      relativeToChangelogFile: true
