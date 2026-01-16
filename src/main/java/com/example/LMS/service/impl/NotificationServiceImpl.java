@@ -55,10 +55,10 @@ public class NotificationServiceImpl implements NotificationService {
                     "Student "+student.getFirstname()+" "+student.getLastname()+ "don't return the book '"+book.getTitle() + "' in the expected return date (" +loan.getExpectedReturnDate() +")."
             );
 
-          messageServiceImpl.sendWhatsappMessage(
+         /* messageServiceImpl.sendWhatsappMessage(
             student.getPhone(),
             message
-          );
+          );*/
 
 
             Notification notification = Notification.builder()

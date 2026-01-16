@@ -42,9 +42,9 @@ public class MessageServiceImpl implements MessageService {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
-            log.info("Email sent successfully to : {}", to);
+            log.info("Email sent successfully to : {}", recipient);
 
-            historyService.create(Status.SUCCESS, Action.SEND_NOTIFICATION,String.format("Notification email sent to %s", to));
+            historyService.create(Status.SUCCESS, Action.SEND_NOTIFICATION,String.format("Notification email sent to %s", recipient));
 
         } catch (IOException e) {
 

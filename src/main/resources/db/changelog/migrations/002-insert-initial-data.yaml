@@ -63,7 +63,9 @@ databaseChangeLog:
               - column: { name: publication_year,    value: "2023-05-15" }
               - column: { name: num_of_copies,       valueNumeric: 5 }
               - column: { name: available_copies,    valueNumeric: 5 }
-              - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Fantasy'" }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Fantasy' LIMIT 1)"
 
         - insert:
             tableName: books
@@ -73,7 +75,9 @@ databaseChangeLog:
               - column: { name: publication_year,    value: "2024-01-10" }
               - column: { name: num_of_copies,       valueNumeric: 3 }
               - column: { name: available_copies,    valueNumeric: 3 }
-              - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Mystery'" }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Mystery' LIMIT 1)"
 
         - insert:
             tableName: books
@@ -83,7 +87,9 @@ databaseChangeLog:
               - column: { name: publication_year,    value: "2022-11-20" }
               - column: { name: num_of_copies,       valueNumeric: 6 }
               - column: { name: available_copies,    valueNumeric: 6 }
-              - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Romance'" }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Romance' LIMIT 1)"
 
         - insert:
             tableName: books
@@ -93,7 +99,9 @@ databaseChangeLog:
               - column: { name: publication_year,    value: "2025-03-01" }
               - column: { name: num_of_copies,       valueNumeric: 4 }
               - column: { name: available_copies,    valueNumeric: 4 }
-              - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Science Fiction'" }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Science Fiction' LIMIT 1)"
 
         - insert:
             tableName: books
@@ -103,7 +111,9 @@ databaseChangeLog:
               - column: { name: publication_year,    value: "2021-08-05" }
               - column: { name: num_of_copies,       valueNumeric: 7 }
               - column: { name: available_copies,    valueNumeric: 7 }
-              - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Non-Fiction'" }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Non-Fiction' LIMIT 1)"
 
         - insert:
             tableName: books
@@ -113,7 +123,9 @@ databaseChangeLog:
               - column: { name: publication_year,    value: "2020-12-12" }
               - column: { name: num_of_copies,       valueNumeric: 5 }
               - column: { name: available_copies,    valueNumeric: 5 }
-              - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Fantasy'" }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Fantasy' LIMIT 1)"
 
         - insert:
             tableName: books
@@ -123,74 +135,90 @@ databaseChangeLog:
               - column: { name: publication_year,    value: "2024-07-18" }
               - column: { name: num_of_copies,       valueNumeric: 5 }
               - column: { name: available_copies,    valueNumeric: 5 }
-              - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Fantasy'" }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Fantasy' LIMIT 1)"
 
-              - insert:
-                  tableName: books
-                  columns:
-                    - column: { name: title,               value: "Shadows in the Fog" }
-                    - column: { name: author,              value: "Raven Clue" }
-                    - column: { name: publication_year,    value: "2025-02-03" }
-                    - column: { name: num_of_copies,       valueNumeric: 4 }
-                    - column: { name: available_copies,    valueNumeric: 4 }
-                    - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Mystery'" }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: title,               value: "Shadows in the Fog" }
+              - column: { name: author,              value: "Raven Clue" }
+              - column: { name: publication_year,    value: "2025-02-03" }
+              - column: { name: num_of_copies,       valueNumeric: 4 }
+              - column: { name: available_copies,    valueNumeric: 4 }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Mystery' LIMIT 1)"
 
-              - insert:
-                  tableName: books
-                  columns:
-                    - column: { name: title,               value: "Hearts at Dawn" }
-                    - column: { name: author,              value: "Lily Bloom" }
-                    - column: { name: publication_year,    value: "2023-09-22" }
-                    - column: { name: num_of_copies,       valueNumeric: 6 }
-                    - column: { name: available_copies,    valueNumeric: 6 }
-                    - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Romance'" }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: title,               value: "Hearts at Dawn" }
+              - column: { name: author,              value: "Lily Bloom" }
+              - column: { name: publication_year,    value: "2023-09-22" }
+              - column: { name: num_of_copies,       valueNumeric: 6 }
+              - column: { name: available_copies,    valueNumeric: 6 }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Romance' LIMIT 1)"
 
-              - insert:
-                  tableName: books
-                  columns:
-                    - column: { name: title,               value: "Galactic Journey" }
-                    - column: { name: author,              value: "Cosmo Ray" }
-                    - column: { name: publication_year,    value: "2024-11-11" }
-                    - column: { name: num_of_copies,       valueNumeric: 3 }
-                    - column: { name: available_copies,    valueNumeric: 3 }
-                    - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Science Fiction'" }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: title,               value: "Galactic Journey" }
+              - column: { name: author,              value: "Cosmo Ray" }
+              - column: { name: publication_year,    value: "2024-11-11" }
+              - column: { name: num_of_copies,       valueNumeric: 3 }
+              - column: { name: available_copies,    valueNumeric: 3 }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Science Fiction' LIMIT 1)"
 
-              - insert:
-                  tableName: books
-                  columns:
-                    - column: { name: title,               value: "The Real Stars" }
-                    - column: { name: author,              value: "Sky Watcher" }
-                    - column: { name: publication_year,    value: "2022-04-30" }
-                    - column: { name: num_of_copies,       valueNumeric: 5 }
-                    - column: { name: available_copies,    valueNumeric: 5 }
-                    - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Non-Fiction'" }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: title,               value: "The Real Stars" }
+              - column: { name: author,              value: "Sky Watcher" }
+              - column: { name: publication_year,    value: "2022-04-30" }
+              - column: { name: num_of_copies,       valueNumeric: 5 }
+              - column: { name: available_copies,    valueNumeric: 5 }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Non-Fiction' LIMIT 1)"
 
-              - insert:
-                  tableName: books
-                  columns:
-                    - column: { name: title,               value: "Whispers of Magic" }
-                    - column: { name: author,              value: "Luna Spell" }
-                    - column: { name: publication_year,    value: "2025-06-14" }
-                    - column: { name: num_of_copies,       valueNumeric: 4 }
-                    - column: { name: available_copies,    valueNumeric: 4 }
-                    - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Fantasy'" }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: title,               value: "Whispers of Magic" }
+              - column: { name: author,              value: "Luna Spell" }
+              - column: { name: publication_year,    value: "2025-06-14" }
+              - column: { name: num_of_copies,       valueNumeric: 4 }
+              - column: { name: available_copies,    valueNumeric: 4 }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Fantasy' LIMIT 1)"
 
-              - insert:
-                  tableName: books
-                  columns:
-                    - column: { name: title,               value: "Forgotten Letters" }
-                    - column: { name: author,              value: "Echo Past" }
-                    - column: { name: publication_year,    value: "2023-12-01" }
-                    - column: { name: num_of_copies,       valueNumeric: 3 }
-                    - column: { name: available_copies,    valueNumeric: 3 }
-                    - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Mystery'" }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: title,               value: "Forgotten Letters" }
+              - column: { name: author,              value: "Echo Past" }
+              - column: { name: publication_year,    value: "2023-12-01" }
+              - column: { name: num_of_copies,       valueNumeric: 3 }
+              - column: { name: available_copies,    valueNumeric: 3 }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Mystery' LIMIT 1)"
 
-              - insert:
-                  tableName: books
-                  columns:
-                    - column: { name: title,               value: "Summer Promises" }
-                    - column: { name: author,              value: "Sunny Vale" }
-                    - column: { name: publication_year,    value: "2024-08-07" }
-                    - column: { name: num_of_copies,       valueNumeric: 5 }
-                    - column: { name: available_copies,    valueNumeric: 5 }
-                    - column: { name: gender_id,           valueComputed: "SELECT id FROM genders WHERE gender_name = 'Romance'" }
+        - insert:
+            tableName: books
+            columns:
+              - column: { name: title,               value: "Summer Promises" }
+              - column: { name: author,              value: "Sunny Vale" }
+              - column: { name: publication_year,    value: "2024-08-07" }
+              - column: { name: num_of_copies,       valueNumeric: 5 }
+              - column: { name: available_copies,    valueNumeric: 5 }
+              - column:
+                  name: gender_id
+                  valueComputed: "(SELECT id FROM genders WHERE gender_name = 'Romance' LIMIT 1)"

@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
@@ -27,7 +27,7 @@ spring:
 twilio:
   account-sid:  ${TWILIO_ACCOUNT_SID:}
   auth-token:   ${TWILIO_AUTH_TOKEN:}
-  from-whatsapp: ${TWILIO_PHONE_NUMBER:+237000000000}
+  from-whatsapp: ${TWILIO_PHONE_NUMBER:}
 
 
 sendgrid:
