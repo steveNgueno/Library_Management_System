@@ -2,7 +2,6 @@ package com.example.LMS.service.impl;
 
 import com.example.LMS.domain.Enum.Action;
 import com.example.LMS.domain.Enum.Status;
-import com.example.LMS.domain.model.History;
 import com.example.LMS.domain.request.BookRequestDto;
 import com.example.LMS.domain.response.BookResponseDto;
 import com.example.LMS.exception.BookNotFoundException;
@@ -13,12 +12,12 @@ import com.example.LMS.domain.model.Gender;
 import com.example.LMS.repository.BookRepository;
 import com.example.LMS.repository.GenderRepository;
 import com.example.LMS.service.BookService;
+import com.example.LMS.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
 
 
 @Service
@@ -29,7 +28,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final GenderRepository genderRepository;
-    private final HistoryServiceImpl historyService;
+    private final HistoryService historyService;
 
     @Override
     public BookResponseDto saveBook(BookRequestDto request) {

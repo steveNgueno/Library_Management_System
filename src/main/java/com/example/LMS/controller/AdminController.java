@@ -2,7 +2,7 @@ package com.example.LMS.controller;
 
 import com.example.LMS.domain.request.AdminRequestDto;
 import com.example.LMS.domain.response.AdminResponseDto;
-import com.example.LMS.service.impl.AdminServiceImpl;
+import com.example.LMS.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,31 +15,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final AdminServiceImpl adminServiceImpl;
+    private final AdminService adminService;
 
     @PostMapping("/save")
     public ResponseEntity<AdminResponseDto> saveStudent(@Valid @RequestBody AdminRequestDto request){
-        return ResponseEntity.ok(adminServiceImpl.save(request));
+        return ResponseEntity.ok(adminService.save(request));
     }
 
     @GetMapping("get/{id}")
     public ResponseEntity<AdminResponseDto> getStudentById(@PathVariable Long id){
-        return ResponseEntity.ok(adminServiceImpl.getById(id));
+        return ResponseEntity.ok(adminService.getById(id));
     }
 
     @GetMapping("getAll")
     public ResponseEntity<List<AdminResponseDto>> getAllStudent(){
-        return ResponseEntity.ok(adminServiceImpl.getAll());
+        return ResponseEntity.ok(adminService.getAll());
     }
 
     @PutMapping("update/{id}")
     public ResponseEntity<AdminResponseDto> updateStudent(@PathVariable Long id, @RequestBody AdminRequestDto request){
-        return ResponseEntity.ok(adminServiceImpl.update(id, request));
+        return ResponseEntity.ok(adminService.update(id, request));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteById(@PathVariable Long id){
-        adminServiceImpl.delete(id);
+        adminService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

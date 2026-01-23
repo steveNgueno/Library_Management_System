@@ -9,6 +9,7 @@ import com.example.LMS.mapper.GenderMapper;
 import com.example.LMS.domain.model.Gender;
 import com.example.LMS.repository.GenderRepository;
 import com.example.LMS.service.GenderService;
+import com.example.LMS.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,7 @@ public class GenderServiceImpl implements GenderService {
 
     private final GenderRepository genderRepository;
     private final GenderMapper genderMapper;
-    private final HistoryServiceImpl historyService;
+    private final HistoryService historyService;
 
     @Override
     public GenderResponseDto save(GenderRequestDto request) {

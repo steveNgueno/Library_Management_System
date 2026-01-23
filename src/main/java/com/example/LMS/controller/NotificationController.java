@@ -1,7 +1,7 @@
 package com.example.LMS.controller;
 
-import com.example.LMS.domain.request.NotificationDto;
-import com.example.LMS.service.impl.NotificationServiceImpl;
+import com.example.LMS.domain.response.NotificationDto;
+import com.example.LMS.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +13,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationServiceImpl notificationServiceImpl;
+    private final NotificationService notificationService;
 
     @PostMapping("/check")
-    public ResponseEntity<?> checkOverdueManually(){
-        notificationServiceImpl.checkOverdueLoans();
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<NotificationDto>> checkOverdueManually(){
+        return ResponseEntity.ok(notificationService.checkOverdueLoans());
     }
 
     @GetMapping("/get/all/{id}")
     public ResponseEntity<List<NotificationDto>> getNotificationsByStudent(@PathVariable Long id){
-        return ResponseEntity.ok(notificationServiceImpl.getNotificationsByStudent(id));
+        return ResponseEntity.ok(notificationService.getNotificationsByStudent(id));
     }
 }

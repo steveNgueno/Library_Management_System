@@ -12,7 +12,9 @@ import com.example.LMS.mapper.AdminMapper;
 import com.example.LMS.repository.AdminRepository;
 import com.example.LMS.repository.StudentRepository;
 import com.example.LMS.service.AdminService;
+import com.example.LMS.service.HistoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +26,8 @@ public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
     private final StudentRepository studentRepository;
     private final AdminMapper adminMapper;
-    private final HistoryServiceImpl historyService;
+    private final HistoryService historyService;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -42,6 +45,7 @@ public class AdminServiceImpl implements AdminService {
 
         Admin admin = adminMapper.toEntity(request);
 
+        admin.setPassword(passwordEncoder.encode(request.password()));
         admin.setRole(Role.ADMIN);
 
         Admin savedAdmin = adminRepository.save(admin);

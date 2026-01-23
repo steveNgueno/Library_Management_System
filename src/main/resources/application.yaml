@@ -44,4 +44,12 @@ springdoc:
   exclude-filters:
       name: com.example.LMS.controller.advice.GlobalExceptionHandler
       type: ASSIGNABLE_TYPE
-
+  swagger-ui:
+    path: /swagger-ui.html
+    oauth:
+      clientId: dummy
+      use-pkce-with-authorization-code-grant: true
+  api-docs:
+      path: /v3/api-docs
+  security:
+    - bearerAuth: []

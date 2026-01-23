@@ -4,9 +4,12 @@ import com.example.LMS.config.SendGridConfig;
 import com.example.LMS.config.TwilioConfig;
 import com.example.LMS.domain.Enum.Action;
 import com.example.LMS.domain.Enum.Status;
+import com.example.LMS.service.HistoryService;
 import com.example.LMS.service.MessageService;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
@@ -22,9 +25,10 @@ import java.io.IOException;
 @AllArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
+    private final SendGrid sendgrid;
     private final SendGridConfig sendGrid;
     private final TwilioConfig twilio;
-    private final HistoryServiceImpl historyService;
+    private final HistoryService historyService;
 
 
     @Override
@@ -42,7 +46,13 @@ public class MessageServiceImpl implements MessageService {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
-            log.info("Email sent successfully to : {}", recipient);
+            Response response = sendgrid.api(request);
+
+            String messageId = response.getHeaders().getOrDefault("X-Message-Id", "unknown");
+            int statusCode = response.getStatusCode();
+
+            log.info("Email sent from: {} → status: {}, messageId: {}, to: {}",
+                    sendGrid.getFromEmail(), statusCode, messageId, recipient);
 
             historyService.create(Status.SUCCESS, Action.SEND_NOTIFICATION,String.format("Notification email sent to %s", recipient));
 
@@ -59,7 +69,7 @@ public class MessageServiceImpl implements MessageService {
   @Override
     public void sendWhatsappMessage(String to, String message) {
 
-        String toWhatsapp = "whatsapp:" + to.replaceAll("[^0-9]", "");
+        String toWhatsapp = "WhatsApp:" + to.replaceAll("[^0-9]", "");
 
         try {
             Message.creator(

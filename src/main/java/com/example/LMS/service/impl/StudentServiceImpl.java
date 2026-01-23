@@ -11,9 +11,11 @@ import com.example.LMS.mapper.StudentMapper;
 import com.example.LMS.domain.model.Student;
 import com.example.LMS.repository.AdminRepository;
 import com.example.LMS.repository.StudentRepository;
+import com.example.LMS.service.HistoryService;
 import com.example.LMS.service.StudentService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +30,8 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final AdminRepository adminRepository;
     private final StudentMapper studentMapper;
-    private final HistoryServiceImpl historyService;
+    private final HistoryService historyService;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -48,6 +51,7 @@ public class StudentServiceImpl implements StudentService {
 
         Student student = studentMapper.toEntity(request);
 
+        student.setPassword(passwordEncoder.encode(request.password()));
         student.setRole(Role.STUDENT);
 
         Student savedStudent = studentRepository.save(student);

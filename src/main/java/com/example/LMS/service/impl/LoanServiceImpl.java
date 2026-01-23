@@ -14,6 +14,7 @@ import com.example.LMS.domain.model.Student;
 import com.example.LMS.repository.BookRepository;
 import com.example.LMS.repository.LoanRepository;
 import com.example.LMS.repository.StudentRepository;
+import com.example.LMS.service.HistoryService;
 import com.example.LMS.service.LoanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class LoanServiceImpl implements LoanService {
     private final LoanRepository loanRepository;
     private final StudentRepository studentRepository;
     private final BookRepository bookRepository;
-    private final HistoryServiceImpl historyService;
+    private final HistoryService historyService;
 
     @Override
     public LoanResponseDto makeABorrow(LoanRequestDto request) throws BusinessLogicException {

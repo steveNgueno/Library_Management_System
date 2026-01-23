@@ -2,7 +2,7 @@ package com.example.LMS.controller;
 
 import com.example.LMS.domain.Enum.Action;
 import com.example.LMS.domain.model.History;
-import com.example.LMS.service.impl.HistoryServiceImpl;
+import com.example.LMS.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/history")
 public class HistoryController {
 
-    private final HistoryServiceImpl historyService;
+    private final HistoryService historyService;
 
     @GetMapping("/get/all")
     public ResponseEntity<List<History>> get(){
