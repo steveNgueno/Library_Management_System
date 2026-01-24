@@ -31,7 +31,7 @@ public class Book extends BaseEntity{
     @Column(name="available_copies")
     private int availableCopies;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "gender_id")
     private Gender gender;
 

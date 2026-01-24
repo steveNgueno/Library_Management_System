@@ -406,3 +406,109 @@ databaseChangeLog:
               - column:
                   name: description
                   type: TEXT
+
+
+   # ──────────────────────────────────────────────────────────────
+      # refresh token
+   # ──────────────────────────────────────────────────────────────
+
+  - changeSet:
+      id: 2026-01-24-003-create-refresh-tokens
+      author: steve
+      comment: "Create refresh_tokens table for JWT refresh token storage"
+      changes:
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: token
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: expiry_date
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: revoked
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: student_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: admin_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: create_at
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: update_at
+                  type: DATETIME
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        # Foreign keys
+        - addForeignKeyConstraint:
+            baseTableName: refresh_tokens
+            baseColumnNames: student_id
+            referencedTableName: students
+            referencedColumnNames: id
+            constraintName: fk_refresh_token_student
+
+        - addForeignKeyConstraint:
+            baseTableName: refresh_tokens
+            baseColumnNames: admin_id
+            referencedTableName: admins
+            referencedColumnNames: id
+            constraintName: fk_refresh_token_admin
+
+        # Indexes for performance
+        - createIndex:
+            tableName: refresh_tokens
+            indexName: idx_refresh_token_token
+            columns:
+              - column:
+                  name: token
+            unique: true
+
+        - createIndex:
+            tableName: refresh_tokens
+            indexName: idx_refresh_token_expiry_date
+            columns:
+              - column:
+                  name: expiry_date
+
+        # Optional: index on revoked for cleanup queries
+        - createIndex:
+            tableName: refresh_tokens
+            indexName: idx_refresh_token_revoked
+            columns:
+              - column:
+                  name: revoked

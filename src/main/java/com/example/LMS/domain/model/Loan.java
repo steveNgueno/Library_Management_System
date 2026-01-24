@@ -27,11 +27,11 @@ public class Loan extends BaseEntity{
     @Column(name="is_active")
     private boolean active;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="book_id" , nullable= false)
     private Book book;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="student_id", nullable= false)
     private Student student;
 

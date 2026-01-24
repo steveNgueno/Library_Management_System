@@ -1,5 +1,6 @@
 package com.example.LMS.controller;
 
+import com.example.LMS.domain.model.RefreshToken;
 import com.example.LMS.domain.request.LoginRequest;
 import com.example.LMS.domain.request.RefreshTokenRequest;
 import com.example.LMS.security.JwtService;
@@ -39,17 +40,22 @@ public class AuthController {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         String accessToken = jwtService.generateAccessToken(userDetails);
-        String refreshToken = jwtService.generateRefreshToken(userDetails);
+        RefreshToken refreshToken = jwtService.generateRefreshToken(userDetails);
 
         return ResponseEntity.ok(Map.of(
                 "accessToken", accessToken,
-                "refreshToken", refreshToken
+                "refreshToken", refreshToken.getToken()
         ));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refreshToken(@RequestBody RefreshTokenRequest request) {
         String refreshToken = request.refreshToken();
+
+        if (refreshToken == null || !jwtService.isRefreshTokenValid(refreshToken)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid or revoked refresh token"));
+        }
+
         String userEmail = jwtService.validateTokenAndExtractUsername(refreshToken);
 
         if (userEmail == null || jwtService.isTokenExpired(refreshToken)) {
@@ -58,11 +64,26 @@ public class AuthController {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
         String newAccessToken = jwtService.generateAccessToken(userDetails);
-        String newRefreshToken = jwtService.generateRefreshToken(userDetails);  // Rotate refresh too
+        RefreshToken newRefreshToken = jwtService.generateRefreshToken(userDetails);
 
         return ResponseEntity.ok(Map.of(
                 "accessToken", newAccessToken,
-                "refreshToken", newRefreshToken
+                "refreshToken", newRefreshToken.getToken()
         ));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody RefreshTokenRequest request) {
+        String refreshToken = request.refreshToken();
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Refresh token required"));
+        }
+
+        jwtService.revokeRefreshToken(refreshToken);
+
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
+
+
 }
