@@ -6,14 +6,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -35,6 +36,24 @@ public class GlobalExceptionHandler {
         log.warn("Validation failed on {}: {}", request.getRequestURI(), message);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(
+            AccessDeniedException ex,
+            HttpServletRequest request) {
+
+        log.warn("Access denied (403) - User: {}, Method: {}, Path: {}, Message: {}",
+                request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anonymous",
+                request.getMethod(),
+                request.getRequestURI(),
+                ex.getMessage()
+        );
+
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("You do not have permission to access this resource");
     }
 
     @ExceptionHandler(BusinessLogicException.class)

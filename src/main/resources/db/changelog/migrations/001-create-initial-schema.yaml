@@ -430,7 +430,7 @@ databaseChangeLog:
 
               - column:
                   name: token
-                  type: VARCHAR(1024)
+                  type: VARCHAR(767)
                   constraints:
                     nullable: false
                     unique: true

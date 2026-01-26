@@ -4,7 +4,9 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 @AllArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private JwtAuthenticationFilter jwtAuthFilter;
@@ -40,12 +43,42 @@ public class SecurityConfig {
                                 "/admin/save",
                                 "/auth/**"
                         ).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/admin/**",
+                                "/student/getAll",
+                                "/loan/getAll",
+                                "/book/delete/**",
+                                "/book/update/**",
+                                "/book/save",
+                                "/notifications/**",
+                                "/gender/save",
+                                "/gender/delete/**",
+                                "/history/**"
+                        ).hasRole("ADMIN")
                         .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/auth/logout").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+
+                            String username = request.getUserPrincipal() != null
+                                    ? request.getUserPrincipal().getName()
+                                    : "anonymous";
+
+                            log.warn("Access denied (403) - User: {}, Method: {}, Path: {}, Reason: {}",
+                                    username,
+                                    request.getMethod(),
+                                    request.getRequestURI(),
+                                    accessDeniedException.getMessage()
+                            );
+
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"You do not have permission to access this resource\"}");
+                        }));
 
         return http.build();
     }
